@@ -1,5 +1,5 @@
-# pico_ps2_diagnostic_tool
-The pico_ps2_diagnostic_tool is designed to capture and replay signals on a PS/2 interface, specifically targeting the DATA and CLOCK lines.
+# pico-ps2-diagnostic-tool
+Tool designed to capture and replay signals on a PS/2 interface, specifically targeting the DATA and CLOCK lines.
 
 I developed this project to assist my customers in providing more detailed reports about the behavior of problematic PS/2-to-USB adapters, including glitches and other anomalies, for my okhi project (Open Keylogger Hardware Implant – USB & PS/2 Keyboards) https://github.com/therealdreg/okhi
 
