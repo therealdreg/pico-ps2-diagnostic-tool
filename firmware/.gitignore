@@ -1,0 +1,5 @@
+build/*
+!build/pico_ps2_sniffer.elf
+!build/pico_ps2_sniffer.hex
+!build/pico_ps2_sniffer.uf2
+!build/reset_flash.uf2
