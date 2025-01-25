@@ -1,7 +1,7 @@
 # pico_ps2_diagnostic_tool
 The pico_ps2_diagnostic_tool is designed to capture and replay signals on a PS/2 interface, specifically targeting the DATA and CLOCK lines.
 
-I developed this project to assist my customers in providing more detailed reports about the behavior of problematic PS/2-to-USB adapters, including glitches and other anomalies, for my OKHI project (Open Keylogger Hardware Implant – USB & PS/2 Keyboards): https://github.com/therealdreg/okhi
+I developed this project to assist my customers in providing more detailed reports about the behavior of problematic PS/2-to-USB adapters, including glitches and other anomalies, for my okhi project (Open Keylogger Hardware Implant – USB & PS/2 Keyboards) https://github.com/therealdreg/okhi
 
 ![](withcables.jpg)
 
@@ -13,7 +13,7 @@ The captures can be exported from the Raspberry Pi Pico flash to COM port and ne
 
 Additionally, the tool includes a glitch detector that monitors and flags extremely short pulses on the PS/2 clock line. (made by some PS2-USB adapters)
 
-All you need is a Raspberry Pi Pico (or my OKHI implant) to record PS/2 signals:
+All you need is a Raspberry Pi Pico (or my okhi implant) to record PS/2 signals:
 - DATA on GPIO20
 - CLOCK on GPIO21
 
