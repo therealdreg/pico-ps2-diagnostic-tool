@@ -3,7 +3,7 @@ The pico_ps2_diagnostic_tool is designed to capture and replay signals on a PS/2
 
 I developed this project to assist my customers in providing more detailed reports about the behavior of problematic PS/2-to-USB adapters, including glitches and other anomalies, for my OKHI project (Open Keylogger Hardware Implant – USB & PS/2 Keyboards): https://github.com/therealdreg/okhi
 
-![](stuff/withcables.jpg)
+![](withcables.jpg)
 
 A "capture" refers to a sequence of GPIO readings taken at short intervals, effectively logging the entire state timeline of the PS/2 pins during the recording session. These captures can be replayed to emulate the original signals, stored in flash memory, deleted, or exported for further analysis.
 
