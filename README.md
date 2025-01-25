@@ -11,7 +11,7 @@ The tool supports multiple captures in flash memory, enabling operations such as
 
 The captures can be exported from the Raspberry Pi Pico flash to COM port and new captures can be imported from the PC to the Raspberry Pi Pico internal flash through the COM port.
 
-Additionally, the tool includes a glitch detector that monitors and flags extremely short pulses on the PS/2 clock line, which are often indicative of signal instability.
+Additionally, the tool includes a glitch detector that monitors and flags extremely short pulses on the PS/2 clock line. (made by some PS2-USB adapters)
 
 All you need is a Raspberry Pi Pico (or my OKHI implant) to record PS/2 signals:
 - DATA on GPIO20
