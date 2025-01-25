@@ -1,0 +1,155 @@
+; MIT License - okhi - Open Keylogger Hardware Implant
+; ---------------------------------------------------------------------------
+; Copyright (c) [2024] by David Reguera Garcia aka Dreg
+; https://github.com/therealdreg/pico_ps2_diagnostic_tool
+; https://www.rootkit.es
+; X @therealdreg
+; dreg@rootkit.es
+; ---------------------------------------------------------------------------
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in all
+; copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+; SOFTWARE.
+; ---------------------------------------------------------------------------
+; WARNING: BULLSHIT CODE X-)
+; ---------------------------------------------------------------------------
+
+; Dreg's note: I have tried to document everything as best as possible and make the code and project
+; as accessible as possible for beginners. There may be errors (I am a lazy bastard using COPILOT)
+; if you find any, please make a PR
+
+; I'm still a novice with the Pico SDK & RP2040, so please bear with me if there are unnecessary things ;-)
+
+; I want to avoid mental uncertainty when solving problems and knowing where things are,
+; so ALL the programs in PIO0/1 are in the same place and order in each execution.
+
+
+; ---- PIO0 AREA ---------------------------------------------------------------------
+
+.program sample_channels
+; PIO0_0, Speed setting from user input
+
+; AUTOPUSH TRUE, TRESHOLD 32
+; FIFO_JOIN_RX: RX FIFO length: 8, TX FIFO is disabled
+; IN PIN 0...8: CHANNEL 0 ...8
+; JMP PIN: TRIGGER
+wait_trigger:
+    ;jmp pin, wait_trigger
+.wrap_target
+    in pins, 2 ; modify this from MCU
+.wrap
+
+.program play_channels
+; PIO0_0, Speed setting from user input
+
+; AUTOPULL TRUE, TRESHOLD 32
+; FIFO_JOIN_RX: RX FIFO length: 8, TX FIFO is disabled
+; IN PIN 0...8: CHANNEL 0 ...8
+; JMP PIN: TRIGGER
+wait_trigger:
+    jmp pin, wait_trigger
+.wrap_target
+    out pins, 2 ; modify this from MCU
+.wrap
+
+
+.program glitch_fast_rise
+; PIO???, Must run at 4 MHz (each instruction takes 0.25 µs)
+
+; It detects very short pulses ("glitches") on a clock input pin, measuring
+; from a falling edge to the next rising edge. Glitches of ~10 µs or shorter
+; are considered detected.
+
+;   - We need to observe a ~10 µs window, which corresponds to ?? instructions
+;     at 4 MHz (40 × 0.25 µs = 10 µs).
+;   - The loop uses 20 iterations, each taking 2 instructions,
+;     resulting in a total of 40 instructions for the detection window.
+;   - If the clock pin goes HIGH during these iterations, we register it
+;     as a glitch.
+
+;    Normal clock (no glitch):
+;        ___          _________          ________
+; CLOCK:    |________|         |________|        |________
+;
+;    With a short glitch
+;        ___          __  _____          _________
+; CLOCK:    |________|  ||     |________|         |________
+;                         ↑
+;                       short glitch (~10 µs)
+
+; The PIO program detects this fast rise (transition to HIGH)
+; happening sooner than expected, which qualifies it as a glitch.
+
+; AUTOPUSH must be true, 32 bit threshold
+; FIFO JOIN RX, TX disabled
+; IN PIN 0: CLOCK
+; IN PIN 1: COUNTER READY
+; JMP PIN: CLOCK
+; SIDE 0: START PIO COUNTER FLAG
+; SIDE 1: THIS IS A GLITCH TO NOTIFY FLAGS
+.side_set 2 opt
+.wrap_target
+init_detection:
+    nop [3] side 0b00
+stuck:
+    jmp stuck side 0b01
+    wait 1 pin 1 side 0b01
+    set x, 20                   ; 00 Initialize X for 20 loop iterations
+    wait 1 pin 0                ; 01 Ensure the CLOCK pin goes HIGH first (avoids false triggers)
+    wait 0 pin 0                ; 02 Now wait until the CLOCK pin goes LOW (start point for measuring)
+check_for_glitch:
+    jmp pin, glitch_detected    ; 03 If the pin transitions HIGH prematurely, it's a glitch
+    jmp x--, check_for_glitch   ; 04 If still LOW, repeat up to 20 times
+    jmp init_detection          ; 05 No glitch detected in this window; restart
+glitch_detected:
+    in x, 32          side 0b10 ; 06 Read the CLOCK pin to register the glitch event
+.wrap                           ; Restart program
+
+
+.program fast_rise_counter
+; SPEED: 250Mhz (each instruction takes 4 ns)
+
+; PRECISION COUNTER 8 ns, two instruction in loop with counter
+
+; FIFO JOIN RX, TX disabled
+; AUTOPUSH TRUE, TRESHOLD 32
+; IN PIN 0: SIGNAL TO NOTIFY OR NOT
+; IN PIN 1: SIGNAL TO START
+; IN PIN 2: DAT
+; IN PIN 3: CLOCK
+; JMP PIN: CLOCK
+.side_set 1 opt
+.wrap_target
+start_again:
+    mov x, !null side 1
+stuck:
+    jmp stuck
+    wait 1 pin 1 ; wait to start from other PIO
+    wait 1 pin 3 ; wait for clock high
+    wait 0 pin 3 side 0 ; wait for clock low
+count:
+    jmp pin, end
+    jmp x--, count ; count each 8 ns, two instructions (loop) at 250 MHz take 8 ns
+    jmp start_again
+end:
+    wait 0 pin 1
+    mov isr, null
+    in pins, 1
+    mov y, isr
+    jmp !y, start_again
+    mov isr, null
+    in x, 32
+.wrap
