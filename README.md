@@ -18,8 +18,8 @@ All you need is a Raspberry Pi Pico (or my okhi implant) to record PS/2 signals:
 - CLOCK on GPIO21
 
 When needed, you can replay these signals via:
-- DATA on GPIO1
-- CLOCK on GPIO0
+- DATA on GPIO0
+- CLOCK on GPIO1
 
 # Related
 
