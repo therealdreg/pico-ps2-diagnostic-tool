@@ -60,6 +60,9 @@ Options:
 7: Nuke PICO FLASH (erase full flash)
 8: Enable/Disable Overclock 250mhz
 ```
+
+# Capturing and replaying signals
+
 Select option 1 to record, replay, and store captures.
 
 Quickly press the Caps Lock key on the PS/2 keyboard multiple times to generate several captures.
@@ -67,6 +70,8 @@ Quickly press the Caps Lock key on the PS/2 keyboard multiple times to generate 
 The captures are now stored in the Raspberry Pi Pico flash memory.
 
 To replay the captures, select option 3.
+
+# Exporting captures
 
 To export the captures to the COM port, first select File -> Log in Tera Term:
 
@@ -79,6 +84,8 @@ To export the captures to the COM port, first select File -> Log in Tera Term:
 Click OK.
 
 Then, select menu option 4. This option exports all captures stored in the Raspberry Pi Pico flash memory to the COM port (as C arrays). You can send these captures to me for further analysis.
+
+# Importing captures
 
 To import captures from the PC to the Raspberry Pi Pico internal flash through the COM port, select option 6.
 
