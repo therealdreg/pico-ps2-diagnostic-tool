@@ -37,6 +37,8 @@
       "javascript": true,
       "python": true
   },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.associations": {
     "bootrom.h": "c",
     "stdio.h": "c",
