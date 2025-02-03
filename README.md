@@ -27,7 +27,7 @@ https://github.com/therealdreg/pico-ps2-diagnostic-tool/releases/latest
 # Flashing the firmware
 To flash the firmware, you need to put the Raspberry Pi Pico in bootloader mode. To do this, press and hold the button while connecting the USB cable to the PC. The Pico will appear as a USB mass storage device. Drag and drop the "pico_ps2_diagnostic_tool.uf2" firmware file to the Pico.
 
-# RequirementsS
+# Requirements
 To record PS/2 signals, you will need a Raspberry Pi Pico (or my okhi implant) with the following connections:
 - DATA on GPIO20
 - CLOCK on GPIO21
@@ -85,6 +85,26 @@ Click OK.
 
 Then, select menu option 4. This option exports all captures stored in the Raspberry Pi Pico flash memory to the COM port (as C arrays). You can send these captures to me for further analysis.
 
+## Checking the exported captures
+
+Ensure that the exported capture adheres to the correct format before sending. Verify the captures using the [check/check.py](check/check.py) script (requires Python 3). 
+
+Run the script as follows:
+
+```
+python check.py exported_captures.txt
+```
+
+If you receive this output:
+
+```
+OK: All lines have the correct size.
+```
+
+Exported captures are correct. If you encounter an "ERROR" message, it indicates that the captures are incorrect, and you should re-export them with overclocking enabled. In some cases, you may need to export several times to obtain a correct export.
+
+**NOTE: Connect the Raspberry Pi Pico directly to the PC using a short, high-quality USB cable. Avoid using USB hubs.**
+
 # Importing captures
 
 To import captures from the PC to the Raspberry Pi Pico internal flash through the COM port, select option 6.
@@ -102,6 +122,12 @@ The file must contain the C arrays of the captures.
 You can use the file [stuff/samples.zip](stuff/samples.zip) as an example.
 
 Now you can replay the imported captures using option 3. (GPIO0 and GPIO1 is the replayed PS/2 interface)
+
+# PS2 Captures
+
+For the okhi project, I have collected an extensive set of PS/2 captures from various motherboards, keyboards and PS/2-to-USB adapters. If you require PS/2 captures for testing purposes, feel free to use these samples.
+
+https://github.com/therealdreg/okhi?tab=readme-ov-file#ps2-captures
 
 # Related
 
